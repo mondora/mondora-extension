@@ -8,7 +8,7 @@ var buildVendorScripts = function (dest) {
 		"bower_components/asteroid/dist/asteroid.js"
 	];
 	return gulp.src(sources)
-		.pipe(plugins.concat("vendor.js"))
+		.pipe(concat("vendor.js"))
 		.pipe(gulp.dest(dest));
 };
 
