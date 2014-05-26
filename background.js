@@ -1,3 +1,9 @@
+chrome.browserAction.onClicked.addListener(function (tab) {
+	chrome.tabs.executeScript({
+		code: "document.body.style.backgroundColor=\"red\""
+	});
+});
+/*
 var stripIdsAndClasses = function (node) {
 	node.removeAttribute("id");
 	node.removeAttribute("class");
@@ -32,3 +38,4 @@ stripIdsAndClasses(postContainer);
 post.body = postContainer.innerHTML;
 
 console.log(post);
+*/
