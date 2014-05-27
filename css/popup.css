@@ -1,0 +1,15 @@
+body {
+}
+
+div {
+	width: 100px;
+	font-family: sans-serif;
+	color: #333333;
+	border: 0px;
+	padding: 10px;
+}
+
+div:hover {
+	cursor: pointer;
+	background: #eeeeee;
+}
