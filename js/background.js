@@ -21,8 +21,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
 	if (msg === "import") {
 		chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
 			var tab = tabs[0];
-			ceres.call("addPostFromExternalSource", tab.url).result.then(function (id) {
-				var url = "http://localhost:8080/#!/post/" + id + "/edit";
+			ceres.call("addPostFromExternalSource", tab.url).result.then(function (url) {
 				chrome.tabs.update(tab.id, {url: url});
 			}, function (err) {
 				console.log(err);
