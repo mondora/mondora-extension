@@ -1,4 +1,4 @@
-var ceres = new Asteroid("localhost:3000");
+var ceres = new Asteroid("api.mondora.com", true);
 var Posts = ceres.createCollection("posts");
 
 ceres.on("login", function () {
