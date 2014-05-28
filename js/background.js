@@ -1,31 +1,116 @@
-var ceres = new Asteroid("api.mondora.com", true);
-var Posts = ceres.createCollection("posts");
+var IMPORTING = false;
 
-ceres.on("login", function () {
-	chrome.browserAction.setIcon({path: "../img/icon.png"});
-	chrome.browserAction.setPopup({popup: "../html/popup-loggedin.html"});
-});
+var addNotification = function () {
+	chrome.tabs.insertCSS(null, {
+		file: "css/notification.css"
+	});
+	chrome.tabs.executeScript(null, {
+		file: "js/addNotification.js"
+	});
+};
 
-ceres.on("logout", function () {
-	chrome.browserAction.setIcon({path: "../img/icon-bw.png"});
-	chrome.browserAction.setPopup({popup:"../html/popup-loggedout.html"});
-});
+var removeNotification = function () {
+	chrome.tabs.executeScript(null, {
+		file: "js/removeNotification.js"
+	});
+};
 
-chrome.runtime.onMessage.addListener(function (msg, sender) {
-	if (msg === "login") {
-		ceres.loginWithTwitter();
+var alertError = function (err) {
+	chrome.notifications.create("errorNotification", {
+        type: "basic",
+        title: "Oh snap! An error occurred",
+        message: "Details: " + JSON.stringify(err),
+        iconUrl: "img/error.png"
+	}, function () {});
+};
+
+var handleFail = function (err) {
+	removeNotification();
+	alertError(err);
+	// Reset importing
+	IMPORTING = false;
+};
+
+var stripClassesAndIds = function (node) {
+	node.removeAttribute("id");
+	node.removeAttribute("class");
+	Array.prototype.forEach.call(node.children, stripClassesAndIds);
+};
+
+var parseContent = function (htmlString) {
+	var div = document.createElement("div");
+	div.innerHTML = htmlString;
+	var topLevelNode = div.querySelector("p").parentElement;
+	stripClassesAndIds(topLevelNode);
+	return topLevelNode.innerHTML;
+};
+
+var getPublishedDate = function (dateString) {
+	if (dateString) {
+		return new Date(dateString).getTime();
 	}
-	if (msg === "logout") {
-		ceres.logout();
+};
+
+var parseInsertAndRedirect = function (parsedPost, ceres, tab) {
+
+	// Init collections and users
+	var Posts = ceres.createCollection("posts");
+	var user = ceres.createCollection("users").reactiveQuery({}).result[0];
+
+	// Construct the post
+	var post = {
+		userId: user._id,
+		map: {},
+		authors: [{
+			userId: user._id,
+			screenName: user.profile.screenName,
+			name: user.profile.name,
+			pictureUrl: user.profile.pictureUrl
+		}],
+		title: parsedPost.title,
+		body: parseContent(parsedPost.content),
+		repost: true,
+		original: {
+			url: parsedPost.url,
+			author: parsedPost.author,
+			publishedOn: getPublishedDate(parsedPost.date_published)
+		},
+		comments: [],
+		published: false
+	};
+
+	// Insert and redirect
+	Posts.insert(post).remote.then(function (postId) {
+		// Reset importing
+		IMPORTING = false;
+		//var redirectUrl = "http://prod.app.mondora.com/#!/post/" + postId + "/edit";
+		var redirectUrl = "http://localhost:8080/#!/post/" + postId + "/edit";
+		chrome.tabs.update(tab.id, {url: redirectUrl});
+	}).fail(handleFail);
+};
+
+chrome.browserAction.onClicked.addListener(function (tab) {
+
+	addNotification();
+	// Prevent multiple clicks
+	if (IMPORTING) {
+		return;
 	}
-	if (msg === "import") {
-		chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-			var tab = tabs[0];
-			ceres.call("addPostFromExternalSource", tab.url).result.then(function (url) {
-				chrome.tabs.update(tab.id, {url: url});
-			}, function (err) {
-				console.log(err);
-			});
+	IMPORTING = true;
+
+	//var ceres = new Asteroid("api.mondora.com", true);
+	var ceres = new Asteroid("localhost:3000");
+
+	ceres.on("connected", function () {
+		ceres.resumeLoginPromise.fail(function () {
+			ceres.loginWithTwitter();
 		});
-	}
+	});
+
+	ceres.on("login", function () {
+		ceres.call("parseWithReadability", tab.url).result.then(function (parsedPost) {
+			parseInsertAndRedirect(parsedPost, ceres, tab);
+		}).fail(handleFail);
+	});
+
 });
