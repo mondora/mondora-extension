@@ -83,9 +83,15 @@ var parseInsertAndRedirect = function (parsedPost, ceres, tab) {
 	Posts.insert(post).remote.then(function (postId) {
 		// Reset importing
 		IMPORTING = false;
-		//var redirectUrl = "http://prod.app.mondora.com/#!/post/" + postId + "/edit";
-		// LOCAL ONLY - a build process should handle this
+
+		// @if TARGET=='prod'
+		var redirectUrl = "http://prod.app.mondora.com/#!/post/" + postId + "/edit";
+		// @endif
+
+		// @if TARGET=='test'
 		var redirectUrl = "http://localhost:8080/#!/post/" + postId + "/edit";
+		// @endif
+
 		chrome.tabs.update(tab.id, {url: redirectUrl});
 	}).fail(handleFail);
 };
@@ -99,9 +105,13 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 	}
 	IMPORTING = true;
 
-	//var ceres = new Asteroid("api.mondora.com", true);
-	// LOCAL ONLY - a build process should handle this
+	// @if TARGET=='test'
+	var ceres = new Asteroid("api.mondora.com", true);
+	// @endif
+
+	// @if TARGET=='test'
 	var ceres = new Asteroid("localhost:3000");
+	// @endif
 
 	ceres.on("connected", function () {
 		ceres.resumeLoginPromise.fail(function () {
