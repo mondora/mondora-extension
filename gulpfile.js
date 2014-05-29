@@ -2,7 +2,7 @@ var gulp	= require("gulp");
 var concat	= require("gulp-concat");
 var pp		= require("gulp-preprocess");
 var mkdirp	= require("mkdirp");
-var EasyZip	= require("easy-zip").EasyZip;
+var exec	= require("child_process").exec;
 
 var buildVendorScripts = function (dest) {
 	var sources = [
@@ -51,10 +51,8 @@ gulp.task("buildProd", function () {
 	buildImages("builds/prod/img/");
 	buildManifest("builds/prod/");
 
-	var zip = new EasyZip();
-	zip.zipFolder("builds/prod/", function () {
-		zip.writeToFile("builds/mondora-extension.zip");
-	});
+	exec("rm builds/mondora-extension.zip");
+	exec("cd builds/ && zip -r mondora-extension.zip prod/");
 });
 
 gulp.task("buildTest", function () {
