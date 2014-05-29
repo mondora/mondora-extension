@@ -105,7 +105,7 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 	}
 	IMPORTING = true;
 
-	// @if TARGET=='test'
+	// @if TARGET=='prod'
 	var ceres = new Asteroid("api.mondora.com", true);
 	// @endif
 
