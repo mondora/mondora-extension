@@ -11,8 +11,7 @@
 	position: fixed;
 	top: calc(50% - 100px);
 	left: calc(50% - 100px);
-	width: 200px;
-	text-align: center;
+	width: 400px;
 	color: #ffffff;
 	font-size: 50px;
 }

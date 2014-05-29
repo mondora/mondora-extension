@@ -18,8 +18,8 @@ var removeNotification = function () {
 var alertError = function (err) {
 	chrome.notifications.create("errorNotification", {
         type: "basic",
-        title: "Oh snap! An error occurred",
-        message: "Details: " + JSON.stringify(err),
+        title: "Oh snap!",
+		message: "An error occurred",
         iconUrl: "img/error.png"
 	}, function () {});
 };
@@ -83,9 +83,9 @@ var parseInsertAndRedirect = function (parsedPost, ceres, tab) {
 	Posts.insert(post).remote.then(function (postId) {
 		// Reset importing
 		IMPORTING = false;
-		var redirectUrl = "http://prod.app.mondora.com/#!/post/" + postId + "/edit";
+		//var redirectUrl = "http://prod.app.mondora.com/#!/post/" + postId + "/edit";
 		// LOCAL ONLY - a build process should handle this
-		//var redirectUrl = "http://localhost:8080/#!/post/" + postId + "/edit";
+		var redirectUrl = "http://localhost:8080/#!/post/" + postId + "/edit";
 		chrome.tabs.update(tab.id, {url: redirectUrl});
 	}).fail(handleFail);
 };
@@ -99,9 +99,9 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 	}
 	IMPORTING = true;
 
-	var ceres = new Asteroid("api.mondora.com", true);
+	//var ceres = new Asteroid("api.mondora.com", true);
 	// LOCAL ONLY - a build process should handle this
-	// var ceres = new Asteroid("localhost:3000");
+	var ceres = new Asteroid("localhost:3000");
 
 	ceres.on("connected", function () {
 		ceres.resumeLoginPromise.fail(function () {
