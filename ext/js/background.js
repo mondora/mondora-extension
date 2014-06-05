@@ -85,7 +85,7 @@ var parseInsertAndRedirect = function (parsedPost, ceres, tab) {
 		IMPORTING = false;
 
 		// @if TARGET=='prod'
-		var redirectUrl = "http://prod.app.mondora.com/#!/post/" + postId + "/edit";
+		var redirectUrl = "http://mondora.com/#!/post/" + postId + "/edit";
 		// @endif
 
 		// @if TARGET=='test'
