@@ -7,6 +7,7 @@ var Q		= require("q");
 
 var buildVendorScripts = function (dest) {
 	console.log("Building vendor scripts");
+	console.log(dest);
 	var deferred = Q.defer();
 	gulp.src([
 		"bower_components/q/q.js",
