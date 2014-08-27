@@ -54,8 +54,8 @@ var getPublishedDate = function (dateString) {
 var parseInsertAndRedirect = function (parsedPost, ceres, tab) {
 
 	// Init collections and users
-	var Posts = ceres.createCollection("posts");
-	var user = ceres.createCollection("users").reactiveQuery({}).result[0];
+	var Posts = ceres.getCollection("posts");
+	var user = ceres.getCollection("users").reactiveQuery({}).result[0];
 
 	// Construct the post
 	var post = {
