@@ -12,7 +12,8 @@ var buildVendorScripts = function (dest) {
 	gulp.src([
 		"bower_components/q/q.js",
 		"bower_components/ddp.js/src/ddp.js",
-		"bower_components/asteroid/dist/asteroid.chrome.js"
+		"bower_components/asteroid/dist/asteroid.chrome.js",
+		"bower_components/asteroid/dist/plugins/twitter-login.js"
 	])
 		.pipe(concat("vendor.js"))
 		.pipe(gulp.dest(dest))
