@@ -120,7 +120,7 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 	});
 
 	ceres.on("login", function () {
-		ceres.call("parseWithReadability", tab.url).result.then(function (parsedPost) {
+		ceres.call("parseWithReadability", encodeURIComponent(tab.url)).result.then(function (parsedPost) {
 			parseInsertAndRedirect(parsedPost, ceres, tab);
 		}).fail(handleFail);
 	});
